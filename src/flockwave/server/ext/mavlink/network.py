@@ -759,12 +759,12 @@ class MAVLinkNetwork:
             if not should_process:
                 continue
 
-            # Update the broadcast address to a subnet-specific one if needed
+            """ # Update the broadcast address to a subnet-specific one if needed
             if not broadcast_address_updated[connection_id]:
                 await self._update_broadcast_address_of_channel_to_subnet(
                     connection_id, address
                 )
-                broadcast_address_updated[connection_id] = True
+                broadcast_address_updated[connection_id] = True """
 
             # Resolve all futures that are waiting for this message
             for system_id, params, future in self._matchers[type]:

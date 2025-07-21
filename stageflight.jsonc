@@ -1,0 +1,35 @@
+// This is an example configuration file for Skybrush Server that configures
+// the server with a single virtual drone.
+//
+// The file is essentially a JSON file, but C-style comments are allowed, and
+// lines starting with a hash are ignored.
+
+{
+  "EXTENSIONS": {
+    // Make the server listen on all interfaces so it can be connected to from
+    // other machines
+    "http_server": {
+      "host": ""
+    },
+    "mavlink": {
+      "enabled": true,
+      "networks": {
+        "mav1": {
+          "connections": ["udp-listen://:14550?broadcast_port=14555"]
+        },
+        "mav2": {
+          "connections": ["udp-listen://:14560?broadcast_port=14565"],
+          "id_offset": 250
+        },
+        "mav3": {
+          "connections": ["udp-listen://:14570?broadcast_port=14575"],
+          "id_offset": 500
+        },
+        "mav4": {
+          "connections": ["udp-listen://:14580?broadcast_port=14585"],
+          "id_offset": 750
+        }
+      }
+    }
+  }
+}

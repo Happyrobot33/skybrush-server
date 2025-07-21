@@ -2273,6 +2273,8 @@ class MAVLinkUAV(UAVBase):
             )
         except NotSupportedError:
             success = False
+        
+        print(success)
 
         if not success:
             # Configure show origin, orientation and altitude reference using
@@ -2290,8 +2292,12 @@ class MAVLinkUAV(UAVBase):
             await self.set_parameter("SHOW_ORIGIN_LNG", encoded_lon)
             await self.set_parameter("SHOW_ORIENTATION", orientation)
 
+        print("before geofence")
+
         # Configure and enable geofence
         await self.configure_geofence(geofence)
+
+        print("after geofence")
 
         # Ask drone to reload show file now that we are done with everything
         # else

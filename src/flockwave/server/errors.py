@@ -39,4 +39,4 @@ class NotSupportedError(FlockwaveError):
         Parameters:
             message: the error message
         """
-        super().__init__(message or "Operation not supported")
+        super().__init__(message or "Operation not supported 2")

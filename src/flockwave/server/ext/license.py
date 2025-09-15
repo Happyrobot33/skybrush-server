@@ -360,6 +360,7 @@ def has_feature(*args: str) -> bool:
     function has no arguments.
     """
     license = get_license()
+    print(args)
     return license is not None and any(license.has_feature(feature) for feature in args)
 
 

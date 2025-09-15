@@ -43,6 +43,7 @@ from flockwave.server.show import (
     get_geofence_configuration_from_show_specification,
     get_light_program_from_show_specification,
     get_trajectory_from_show_specification,
+    get_pyro_program_from_show_specification
 )
 from flockwave.server.show.formats import SkybrushBinaryShowFile
 from flockwave.server.types import GCSLogMessageSender
@@ -2207,7 +2208,8 @@ class MAVLinkUAV(UAVBase):
         pyro_program = None
         rth_plan = None
         yaw_setpoints = None
-        pro_keys = set(show.keys()).intersection(["pyro", "rthPlan", "yawControl"])
+        pro_keys = set(show.keys()).intersection(["rthPlan", "yawControl"])
+        pyro_program = get_pyro_program_from_show_specification(show)
         if pro_keys:
             try:
                 api = self.driver.app.import_api("show_pro")
@@ -2218,7 +2220,6 @@ class MAVLinkUAV(UAVBase):
             except RuntimeError as ex:
                 self.driver.log.warning(str(ex))
             else:
-                pyro_program = api.encode_pyro(show)
                 rth_plan = api.encode_rth_plan(show)
                 yaw_setpoints = api.encode_yaw(show)
 
@@ -2273,8 +2274,6 @@ class MAVLinkUAV(UAVBase):
             )
         except NotSupportedError:
             success = False
-        
-        print(success)
 
         if not success:
             # Configure show origin, orientation and altitude reference using
@@ -2292,12 +2291,8 @@ class MAVLinkUAV(UAVBase):
             await self.set_parameter("SHOW_ORIGIN_LNG", encoded_lon)
             await self.set_parameter("SHOW_ORIENTATION", orientation)
 
-        print("before geofence")
-
         # Configure and enable geofence
         await self.configure_geofence(geofence)
-
-        print("after geofence")
 
         # Ask drone to reload show file now that we are done with everything
         # else

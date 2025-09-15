@@ -549,14 +549,14 @@ class SkybrushServer(DaemonApp):
             try:
                 method = getattr(uav.driver, method_name)  # type: ignore
             except (AttributeError, RuntimeError, TypeError):
-                raise RuntimeError("Operation not supported 1") from None
+                raise RuntimeError("Operation not supported") from None
 
             # Execute the method and catch all runtime errors
             result = method(uav, **parameters)
         except NotImplementedError:
             error = "Operation not implemented"
         except NotSupportedError:
-            error = "Operation not supported 2"
+            error = "Operation not supported"
         except RuntimeError as ex:
             error = str(ex)
         except Exception as ex:
@@ -634,7 +634,7 @@ class SkybrushServer(DaemonApp):
             try:
                 method = getattr(driver, method_name)  # type: ignore
             except (AttributeError, RuntimeError, TypeError):
-                common_error = "Operation not supported 7"
+                common_error = "Operation not supported"
                 method = None
 
             # Execute the method and catch all runtime errors
@@ -644,7 +644,7 @@ class SkybrushServer(DaemonApp):
                 except NotImplementedError:
                     common_error = "Operation not implemented"
                 except NotSupportedError:
-                    common_error = "Operation not supported 9"
+                    common_error = "Operation not supported"
                 except Exception as ex:
                     common_error = "Unexpected error: {0}".format(ex)
                     log.exception(ex)

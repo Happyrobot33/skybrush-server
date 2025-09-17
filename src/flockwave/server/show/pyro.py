@@ -19,8 +19,29 @@ def get_pyro_program_from_show_specification(show: Dict) -> bytes:
 #    for key in pyro.keys():
 #        print(f"Pyro key: {key}")
     
+    #we need to get the real events list after my fuckery dealing with the studio server software
+    #get the first payload
+    payloads = pyro.get("payloads", None)
+    if not payloads:
+        return None
+    
+    #print(f"Pyro payloads: {payloads}")
+    
+    #get the name in the first payload
+    payload1 = payloads.get("payload1", None)
+    if not payload1:
+        return None
+    
+    #print(f"Pyro payload1: {payload1}")
+    name = payload1.get("name", None)
+    if not name:
+        return None
+    
+    #the name is ACTUALLY a array of events
+
     #print the events
-    events = pyro.get("events", None)
+    events = eval(name)
+    #events = pyro.get("events", None)
     #print(f"Pyro events: {events}")
 
     event_data = None
@@ -29,12 +50,28 @@ def get_pyro_program_from_show_specification(show: Dict) -> bytes:
     if events:
         event_data = bytearray()
         for event in events:
-            time_ms = int(event[0] * 1000)
-            #encode the channel as a byte
-            channel = encode_variable_length_integer(event[1])
+            #print(f"Event: {event}")
+            #subtract the prefire time from the event time
+            time_ms = int(event[0] * 1000) - int(event[5] * 1000)
 
             #encode time_ms as a varint
             event_data.extend(encode_variable_length_integer(time_ms))
 
-            event_data.extend(channel)
+            event_data.extend(encode_variable_length_integer(event[1]))
+
+            #encode the signs of pitch yaw roll in a single byte
+            signs = 0
+            if event[2] < 0:
+                signs |= 0b100
+            if event[3] < 0:
+                signs |= 0b010
+            if event[4] < 0:
+                signs |= 0b001
+            
+            event_data.append(signs)
+
+            #pitch yaw roll
+            event_data.extend(encode_variable_length_integer(abs(event[2])))
+            event_data.extend(encode_variable_length_integer(abs(event[3])))
+            event_data.extend(encode_variable_length_integer(abs(event[4])))
     return event_data

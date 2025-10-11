@@ -57,6 +57,10 @@ def get_pyro_program_from_show_specification(show: Dict) -> bytes:
             #encode time_ms as a varint
             event_data.extend(encode_variable_length_integer(time_ms))
 
+            #encode the duration as a varint
+            event_data.extend(encode_variable_length_integer(int(event[6] * 1000)))
+
+            #encode the pyro index
             event_data.extend(encode_variable_length_integer(event[1]))
 
             #encode the signs of pitch yaw roll in a single byte
